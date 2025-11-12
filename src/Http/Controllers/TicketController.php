@@ -155,23 +155,6 @@ class TicketController extends Controller
         return view('tickets::tickets.show', compact('ticket', 'agents', 'categories'));
     }
 
-    /**
-     * Show form for editing ticket
-     */
-    public function edit(Ticket $ticket)
-    {
-        // Si solo se está actualizando el status, usar updateStatus policy
-        if ($request->has('status') && count($request->only(['status', 'subject', 'description', 'priority'])) === count($request->validated())) {
-            $this->authorize('updateStatus', $ticket);
-        } else {
-            $this->authorize('update', $ticket);
-        }
-
-        $categories = TicketCategory::active()->ordered()->get();
-        $agents = $this->assignmentService->getAvailableAgents();
-
-        return view('tickets::tickets.edit', compact('ticket', 'categories', 'agents'));
-    }
 
     /**
      * Update specified ticket

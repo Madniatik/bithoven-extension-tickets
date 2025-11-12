@@ -37,11 +37,6 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                @can('update', $ticket)
-                                    <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-light-primary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                @endcan
                                 @can('updateStatus', $ticket)
                                     {{-- Status Dropdown --}}
                                     <div class="btn-group">
@@ -113,7 +108,8 @@
                         <h3 class="card-title">Description</h3>
                     </div>
                     <div class="card-body">
-                        <div class="text-gray-700 fs-6 mb-3" style="white-space: pre-line;">{{ trim($ticket->description) }}
+                        <div class="text-gray-700 fs-6 mb-3" style="white-space: pre-line;">
+                            {{ trim($ticket->description) }}
                         </div>
 
                         {{-- Mostrar archivos adjuntos del ticket (solo los del ticket inicial, no de comentarios) --}}
@@ -129,10 +125,7 @@
                                     @foreach ($ticketAttachments as $attachment)
                                         @php
                                             $extension = strtolower(
-                                                pathinfo(
-                                                    $attachment->filename,
-                                                    PATHINFO_EXTENSION,
-                                                ),
+                                                pathinfo($attachment->filename, PATHINFO_EXTENSION),
                                             );
                                             $isImage = in_array($extension, [
                                                 'jpg',
@@ -147,8 +140,7 @@
                                         @if ($isImage)
                                             {{-- Mostrar imagen --}}
                                             <div class="position-relative">
-                                                <a href="{{ $attachment->url }}"
-                                                    data-fslightbox="ticket-attachments"
+                                                <a href="{{ $attachment->url }}" data-fslightbox="ticket-attachments"
                                                     class="d-block">
                                                     <img src="{{ $attachment->url }}"
                                                         alt="{{ $attachment->original_filename }}"
@@ -167,15 +159,12 @@
                                             <div class="d-flex align-items-center bg-light rounded p-3"
                                                 style="min-width: 200px;">
                                                 <div class="symbol symbol-40px me-3">
-                                                    <span
-                                                        class="symbol-label bg-light-primary">
-                                                        <i
-                                                            class="fas fa-file text-primary fs-5"></i>
+                                                    <span class="symbol-label bg-light-primary">
+                                                        <i class="fas fa-file text-primary fs-5"></i>
                                                     </span>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <a href="{{ $attachment->url }}"
-                                                        target="_blank"
+                                                    <a href="{{ $attachment->url }}" target="_blank"
                                                         class="text-gray-800 text-hover-primary fw-semibold d-block text-truncate"
                                                         style="max-width: 150px;">
                                                         {{ $attachment->original_filename }}
@@ -238,7 +227,8 @@
                                                         </div>
                                                     </div>
                                                     @if ($comment->user_id === auth()->id())
-                                                        <button type="button" class="btn btn-sm btn-icon btn-light-danger" 
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-icon btn-light-danger"
                                                             onclick="deleteComment({{ $comment->id }})"
                                                             title="Delete comment">
                                                             <i class="fas fa-trash fs-7"></i>

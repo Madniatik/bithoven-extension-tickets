@@ -11,7 +11,6 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/', [TicketController::class, 'store'])->name('store');
         Route::get('/{ticket}', [TicketController::class, 'show'])->name('show');
-        // Route::get('/{ticket}/edit', [TicketController::class, 'edit'])->name('edit');
         Route::put('/{ticket}', [TicketController::class, 'update'])->name('update');
         Route::delete('/{ticket}', [TicketController::class, 'destroy'])->name('destroy');
         
