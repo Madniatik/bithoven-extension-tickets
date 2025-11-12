@@ -37,6 +37,11 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
+                                @can('update', $ticket)
+                                    <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-light-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                @endcan
                                 @can('updateStatus', $ticket)
                                     {{-- Status Dropdown --}}
                                     <div class="btn-group">
