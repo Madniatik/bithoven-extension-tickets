@@ -1,24 +1,25 @@
-@extends('layouts._default')
+<x-default-layout>
+    @section('title', 'Tickets')
 
-@section('title', 'Tickets')
+    @section('breadcrumbs')
+        {{ Breadcrumbs::render('tickets.index') }}
+    @endsection
 
-@push('styles')
-<style>
-    .ticket-status-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 0.475rem;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-    .ticket-priority-badge {
-        padding: 0.35rem 0.75rem;
-        border-radius: 0.375rem;
-        font-size: 0.85rem;
-    }
-</style>
-@endpush
-
-@section('content')
+    @push('styles')
+    <style>
+        .ticket-status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 0.475rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .ticket-priority-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.85rem;
+        }
+    </style>
+    @endpush
 <div class="container-fluid">
     {{-- Page Header --}}
     <div class="row mb-5">
@@ -307,4 +308,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-default-layout>

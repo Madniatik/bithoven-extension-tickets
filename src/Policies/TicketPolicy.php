@@ -2,8 +2,8 @@
 
 namespace Bithoven\Tickets\Policies;
 
+use App\Core\Foundation\Models\User;
 use Bithoven\Tickets\Models\Ticket;
-use App\Models\User;
 
 class TicketPolicy
 {
@@ -40,16 +40,23 @@ class TicketPolicy
     }
 
     /**
-     * Determine if user can update the ticket
+     * Determine if the user can update the ticket (full edit - solo creador).
      */
     public function update(User $user, Ticket $ticket): bool
     {
-        // User can update if they have edit permission and either:
-        // - They created the ticket
-        // - They are assigned to it
+        return $user->can('edit-tickets') && $ticket->user_id === $user->id;
+    }
+
+    /**
+     * Determine if the user can update the ticket status (creador, asignado, o admin).
+     */
+    public function updateStatus(User $user, Ticket $ticket): bool
+    {
+        // Puede cambiar el estado: SOLO usuario asignado O quien tenga manage-ticket-categories (admins)
+        // El creador NO puede cambiar el estado, solo comentar y eliminar
         return $user->can('edit-tickets') && (
-            $ticket->user_id === $user->id ||
-            $ticket->assigned_to === $user->id
+            $ticket->assigned_to === $user->id ||
+            $user->can('manage-ticket-categories')
         );
     }
 
@@ -58,7 +65,15 @@ class TicketPolicy
      */
     public function delete(User $user, Ticket $ticket): bool
     {
-        return $user->can('delete-tickets') && $ticket->user_id === $user->id;
+        // User must have delete-tickets permission and either:
+        // - They created the ticket
+        // - They are assigned to it
+        // - They have manage-ticket-categories permission (admin/super-admin)
+        return $user->can('delete-tickets') && (
+            $ticket->user_id === $user->id ||
+            $ticket->assigned_to === $user->id ||
+            $user->can('manage-ticket-categories')
+        );
     }
 
     /**

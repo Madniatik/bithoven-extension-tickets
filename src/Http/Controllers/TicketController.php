@@ -31,6 +31,17 @@ class TicketController extends Controller
         $query = Ticket::with(['user', 'assignedUser', 'category'])
             ->latest();
 
+        // Check if user is admin/agent (can edit tickets or manage categories)
+        $isAdmin = auth()->user()->can('edit-tickets') || auth()->user()->can('manage-ticket-categories');
+
+        // If not admin, only show user's own tickets (created or assigned)
+        if (!$isAdmin) {
+            $query->where(function ($q) {
+                $q->where('user_id', auth()->id())
+                  ->orWhere('assigned_to', auth()->id());
+            });
+        }
+
         // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -46,8 +57,8 @@ class TicketController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        // Filter by assigned user
-        if ($request->filled('assigned_to')) {
+        // Filter by assigned user (only for admins)
+        if ($isAdmin && $request->filled('assigned_to')) {
             if ($request->assigned_to === 'unassigned') {
                 $query->whereNull('assigned_to');
             } else {
@@ -65,8 +76,8 @@ class TicketController extends Controller
             });
         }
 
-        // My tickets filter
-        if ($request->filled('mine')) {
+        // My tickets filter (only for admins)
+        if ($isAdmin && $request->filled('mine')) {
             $query->where(function ($q) {
                 $q->where('user_id', auth()->id())
                   ->orWhere('assigned_to', auth()->id());
@@ -78,7 +89,14 @@ class TicketController extends Controller
         // Get filter options
         $categories = TicketCategory::active()->ordered()->get();
         $agents = User::permission('edit-tickets')->get();
-        $statistics = $this->ticketService->getStatistics();
+        
+        // Get statistics filtered by user type
+        $statisticsFilters = [];
+        if (!$isAdmin) {
+            // For normal users, only show their tickets in statistics
+            $statisticsFilters['user_id'] = auth()->id();
+        }
+        $statistics = $this->ticketService->getStatistics($statisticsFilters);
 
         return view('tickets::tickets.index', compact(
             'tickets',
@@ -140,7 +158,12 @@ class TicketController extends Controller
      */
     public function edit(Ticket $ticket)
     {
-        $this->authorize('update', $ticket);
+        // Si solo se está actualizando el status, usar updateStatus policy
+        if ($request->has('status') && count($request->only(['status', 'subject', 'description', 'priority'])) === count($request->validated())) {
+            $this->authorize('updateStatus', $ticket);
+        } else {
+            $this->authorize('update', $ticket);
+        }
 
         $categories = TicketCategory::active()->ordered()->get();
         $agents = $this->assignmentService->getAvailableAgents();
@@ -153,9 +176,23 @@ class TicketController extends Controller
      */
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
-        $this->authorize('update', $ticket);
+        // Si solo se está actualizando el status, usar updateStatus policy
+        if ($request->has('status') && count($request->only(['status', 'subject', 'description', 'priority'])) === count($request->validated())) {
+            $this->authorize('updateStatus', $ticket);
+        } else {
+            $this->authorize('update', $ticket);
+        }
 
         $this->ticketService->updateTicket($ticket, $request->validated());
+
+        // If it's an AJAX request, return JSON
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket updated successfully',
+                'ticket' => $ticket->fresh(['user', 'assignedUser', 'category'])
+            ]);
+        }
 
         return redirect()
             ->route('tickets.show', $ticket)
@@ -209,7 +246,8 @@ class TicketController extends Controller
 
         $request->validate([
             'comment' => 'required|string',
-            'is_internal' => 'boolean'
+            'is_internal' => 'boolean',
+            'attachments.*' => 'nullable|file|max:10240', // Max 10MB por archivo
         ]);
 
         $canAddInternal = auth()->user()->can('addInternalComment', $ticket);
@@ -219,11 +257,18 @@ class TicketController extends Controller
             'is_internal' => $canAddInternal && $request->boolean('is_internal'),
         ]);
 
+        // Manejar archivos adjuntos
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $this->ticketService->addAttachmentToComment($comment, $file);
+            }
+        }
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully',
-                'comment' => $comment->load('user')
+                'comment' => $comment->load('user', 'attachments')
             ]);
         }
 
@@ -235,7 +280,12 @@ class TicketController extends Controller
      */
     public function close(Ticket $ticket)
     {
-        $this->authorize('update', $ticket);
+        // Si solo se está actualizando el status, usar updateStatus policy
+        if ($request->has('status') && count($request->only(['status', 'subject', 'description', 'priority'])) === count($request->validated())) {
+            $this->authorize('updateStatus', $ticket);
+        } else {
+            $this->authorize('update', $ticket);
+        }
 
         $this->ticketService->closeTicket($ticket);
 
@@ -254,7 +304,12 @@ class TicketController extends Controller
      */
     public function reopen(Ticket $ticket)
     {
-        $this->authorize('update', $ticket);
+        // Si solo se está actualizando el status, usar updateStatus policy
+        if ($request->has('status') && count($request->only(['status', 'subject', 'description', 'priority'])) === count($request->validated())) {
+            $this->authorize('updateStatus', $ticket);
+        } else {
+            $this->authorize('update', $ticket);
+        }
 
         $this->ticketService->reopenTicket($ticket);
 

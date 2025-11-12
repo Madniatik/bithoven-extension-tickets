@@ -4,15 +4,15 @@ use Illuminate\Support\Facades\Route;
 use Bithoven\Tickets\Http\Controllers\TicketController;
 use Bithoven\Tickets\Http\Controllers\TicketCategoryController;
 
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function () {
     // Tickets
     Route::prefix('tickets')->name('tickets.')->group(function () {
         Route::get('/', [TicketController::class, 'index'])->name('index');
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/', [TicketController::class, 'store'])->name('store');
         Route::get('/{ticket}', [TicketController::class, 'show'])->name('show');
-        Route::get('/{ticket}/edit', [TicketController::class, 'edit'])->name('edit');
-        Route::put('/{ticket}', [TicketController::class, 'update'])->name('update');
+        // Route::get('/{ticket}/edit', [TicketController::class, 'edit'])->name('edit'); // Eliminada - no necesaria
+        Route::put('/{ticket}', [TicketController::class, 'update'])->name('update'); // Solo para cambios de status vía AJAX
         Route::delete('/{ticket}', [TicketController::class, 'destroy'])->name('destroy');
         
         // Ticket actions

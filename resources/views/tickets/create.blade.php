@@ -1,8 +1,9 @@
-@extends('layouts._default')
+<x-default-layout>
+    @section('title', 'Create New Ticket')
 
-@section('title', 'Create New Ticket')
-
-@section('content')
+    @section('breadcrumbs')
+        {{ Breadcrumbs::render('tickets.create') }}
+    @endsection
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-8 offset-lg-2">
@@ -134,4 +135,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-default-layout>

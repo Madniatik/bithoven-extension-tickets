@@ -164,8 +164,12 @@ class TicketService
     {
         $query = Ticket::query();
 
+        // Filter by user_id (for normal users to see only their tickets)
         if (!empty($filters['user_id'])) {
-            $query->where('user_id', $filters['user_id']);
+            $query->where(function ($q) use ($filters) {
+                $q->where('user_id', $filters['user_id'])
+                  ->orWhere('assigned_to', $filters['user_id']);
+            });
         }
 
         if (!empty($filters['assigned_to'])) {
@@ -212,5 +216,28 @@ class TicketService
         }
 
         return $tickets->count();
+    }
+
+    /**
+     * Add attachment to comment
+     */
+    public function addAttachmentToComment($comment, $file)
+    {
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs(
+            config('tickets.uploads.path'),
+            $filename,
+            config('tickets.uploads.disk')
+        );
+
+        return $comment->attachments()->create([
+            'ticket_id' => $comment->ticket_id,
+            'user_id' => auth()->id(),
+            'filename' => $filename,
+            'original_filename' => $file->getClientOriginalName(),
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'path' => $path,
+        ]);
     }
 }
