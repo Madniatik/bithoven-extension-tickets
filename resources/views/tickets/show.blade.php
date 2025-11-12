@@ -339,18 +339,29 @@
 
                         <div class="mb-4">
                             <div class="text-muted fs-7 mb-2">Category</div>
-                            <form action="{{ route('tickets.update-category', $ticket) }}" method="POST" id="categoryForm">
-                                @csrf
-                                @method('PATCH')
-                                <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()">
-                                    <option value="">No Category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            @can('manage-ticket-categories')
+                                <form action="{{ route('tickets.update-category', $ticket) }}" method="POST" id="categoryForm">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="">No Category</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            @else
+                                @if($ticket->category)
+                                    <span class="badge fs-7" style="background-color: {{ $ticket->category->color }}; color: white;">
+                                        <i class="fas {{ $ticket->category->icon }} me-1"></i>
+                                        {{ $ticket->category->name }}
+                                    </span>
+                                @else
+                                    <span class="text-muted">No Category</span>
+                                @endif
+                            @endcan
                         </div>
 
                         <div class="separator my-4"></div>

@@ -329,7 +329,7 @@ class TicketController extends Controller
      */
     public function updateCategory(Request $request, Ticket $ticket)
     {
-        $this->authorize('view', $ticket);
+        abort_unless(auth()->user()->can('manage-ticket-categories'), 403, 'Only ticket administrators can change categories');
 
         $request->validate([
             'category_id' => 'nullable|exists:ticket_categories,id'
