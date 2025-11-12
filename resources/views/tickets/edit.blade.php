@@ -74,6 +74,7 @@
                             {{-- Category --}}
                             <div class="col-md-6">
                                 <label class="form-label">Category</label>
+                                @can('manage-ticket-categories')
                                 <select name="category_id" class="form-select @error('category_id') is-invalid @enderror">
                                     <option value="">Select category...</option>
                                     @foreach($categories as $category)
@@ -85,6 +86,13 @@
                                 @error('category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                @else
+                                <input type="text" class="form-control" value="{{ $ticket->category->name ?? 'No category' }}" disabled>
+                                <input type="hidden" name="category_id" value="{{ $ticket->category_id }}">
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Only ticket administrators can change the category
+                                </div>
+                                @endcan
                             </div>
                         </div>
 
