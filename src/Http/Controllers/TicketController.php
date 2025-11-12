@@ -3,14 +3,15 @@
 namespace Bithoven\Tickets\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Bithoven\Tickets\Models\Ticket;
-use Bithoven\Tickets\Models\TicketCategory;
-use Bithoven\Tickets\Services\TicketService;
-use Bithoven\Tickets\Services\AssignmentService;
+use App\Models\User;
 use Bithoven\Tickets\Http\Requests\StoreTicketRequest;
 use Bithoven\Tickets\Http\Requests\UpdateTicketRequest;
+use Bithoven\Tickets\Models\Ticket;
+use Bithoven\Tickets\Models\TicketCategory;
+use Bithoven\Tickets\Services\AssignmentService;
+use Illuminate\Support\Facades\Storage;
+use Bithoven\Tickets\Services\TicketService;
 use Illuminate\Http\Request;
-use App\Models\User;
 
 class TicketController extends Controller
 {
@@ -35,10 +36,10 @@ class TicketController extends Controller
         $isAdmin = auth()->user()->can('edit-tickets') || auth()->user()->can('manage-ticket-categories');
 
         // If not admin, only show user's own tickets (created or assigned)
-        if (!$isAdmin) {
+        if (! $isAdmin) {
             $query->where(function ($q) {
                 $q->where('user_id', auth()->id())
-                  ->orWhere('assigned_to', auth()->id());
+                    ->orWhere('assigned_to', auth()->id());
             });
         }
 
@@ -71,8 +72,8 @@ class TicketController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('ticket_number', 'like', "%{$search}%")
-                  ->orWhere('subject', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('subject', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -80,7 +81,7 @@ class TicketController extends Controller
         if ($isAdmin && $request->filled('mine')) {
             $query->where(function ($q) {
                 $q->where('user_id', auth()->id())
-                  ->orWhere('assigned_to', auth()->id());
+                    ->orWhere('assigned_to', auth()->id());
             });
         }
 
@@ -89,10 +90,10 @@ class TicketController extends Controller
         // Get filter options
         $categories = TicketCategory::active()->ordered()->get();
         $agents = User::permission('edit-tickets')->get();
-        
+
         // Get statistics filtered by user type
         $statisticsFilters = [];
-        if (!$isAdmin) {
+        if (! $isAdmin) {
             // For normal users, only show their tickets in statistics
             $statisticsFilters['user_id'] = auth()->id();
         }
@@ -145,7 +146,7 @@ class TicketController extends Controller
             'assignedUser',
             'category',
             'comments.user',
-            'attachments'
+            'attachments',
         ]);
 
         $agents = $this->assignmentService->getAvailableAgents();
@@ -191,7 +192,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Ticket updated successfully',
-                'ticket' => $ticket->fresh(['user', 'assignedUser', 'category'])
+                'ticket' => $ticket->fresh(['user', 'assignedUser', 'category']),
             ]);
         }
 
@@ -222,7 +223,7 @@ class TicketController extends Controller
         $this->authorize('assign', Ticket::class);
 
         $request->validate([
-            'assigned_to' => 'required|exists:users,id'
+            'assigned_to' => 'required|exists:users,id',
         ]);
 
         $this->assignmentService->reassign($ticket, $request->assigned_to);
@@ -231,7 +232,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Ticket assigned successfully',
-                'ticket' => $ticket->fresh(['assignedUser'])
+                'ticket' => $ticket->fresh(['assignedUser']),
             ]);
         }
 
@@ -252,7 +253,7 @@ class TicketController extends Controller
         ]);
 
         $canAddInternal = auth()->user()->can('addInternalComment', $ticket);
-        
+
         $comment = $this->ticketService->addComment($ticket, [
             'comment' => $request->comment,
             'is_internal' => $canAddInternal && $request->boolean('is_internal'),
@@ -269,7 +270,7 @@ class TicketController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully',
-                'comment' => $comment->load('user', 'attachments')
+                'comment' => $comment->load('user', 'attachments'),
             ]);
         }
 
@@ -293,7 +294,7 @@ class TicketController extends Controller
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Ticket closed successfully'
+                'message' => 'Ticket closed successfully',
             ]);
         }
 
@@ -317,7 +318,7 @@ class TicketController extends Controller
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Ticket reopened successfully'
+                'message' => 'Ticket reopened successfully',
             ]);
         }
 
@@ -332,13 +333,39 @@ class TicketController extends Controller
         abort_unless(auth()->user()->can('manage-ticket-categories'), 403, 'Only ticket administrators can change categories');
 
         $request->validate([
-            'category_id' => 'nullable|exists:ticket_categories,id'
+            'category_id' => 'nullable|exists:ticket_categories,id',
         ]);
 
         $ticket->update([
-            'category_id' => $request->category_id
+            'category_id' => $request->category_id,
         ]);
 
         return redirect()->back()->with('success', 'Category updated successfully');
+    }
+
+    /**
+     * Delete a comment
+     */
+    public function deleteComment(Ticket $ticket, $commentId)
+    {
+        $comment = $ticket->comments()->findOrFail($commentId);
+
+        // Only the comment creator can delete it
+        if ($comment->user_id !== auth()->id()) {
+            abort(403, 'Only the comment creator can delete it');
+        }
+
+        // Delete attachments associated with this comment
+        foreach ($comment->attachments as $attachment) {
+            // Delete file from storage
+            if (\Storage::exists($attachment->file_path)) {
+                \Storage::delete($attachment->file_path);
+            }
+            $attachment->delete();
+        }
+
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Comment deleted successfully');
     }
 }

@@ -113,8 +113,79 @@
                         <h3 class="card-title">Description</h3>
                     </div>
                     <div class="card-body">
-                        <div class="text-gray-700 fs-6" style="white-space: pre-line;">{{ trim($ticket->description) }}
+                        <div class="text-gray-700 fs-6 mb-3" style="white-space: pre-line;">{{ trim($ticket->description) }}
                         </div>
+
+                        {{-- Mostrar archivos adjuntos del ticket --}}
+                        @if ($ticket->attachments && $ticket->attachments->count() > 0)
+                            <div class="mt-4">
+                                <div class="text-muted fs-7 mb-3">
+                                    <i class="fas fa-paperclip me-1"></i> Attached Files:
+                                </div>
+                                <div class="d-flex flex-wrap gap-3">
+                                    @foreach ($ticket->attachments as $attachment)
+                                        @php
+                                            $extension = strtolower(
+                                                pathinfo(
+                                                    $attachment->filename,
+                                                    PATHINFO_EXTENSION,
+                                                ),
+                                            );
+                                            $isImage = in_array($extension, [
+                                                'jpg',
+                                                'jpeg',
+                                                'png',
+                                                'gif',
+                                                'webp',
+                                                'svg',
+                                            ]);
+                                        @endphp
+
+                                        @if ($isImage)
+                                            {{-- Mostrar imagen --}}
+                                            <div class="position-relative">
+                                                <a href="{{ $attachment->url }}"
+                                                    data-fslightbox="ticket-attachments"
+                                                    class="d-block">
+                                                    <img src="{{ $attachment->url }}"
+                                                        alt="{{ $attachment->original_filename }}"
+                                                        class="rounded shadow-sm"
+                                                        style="max-width: 300px; max-height: 200px; object-fit: cover; cursor: pointer;">
+                                                </a>
+                                                <div class="position-absolute top-0 end-0 m-2">
+                                                    <span class="badge badge-light-dark">
+                                                        <i class="fas fa-image"></i>
+                                                        {{ $attachment->formatted_size }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            {{-- Mostrar archivo no-imagen --}}
+                                            <div class="d-flex align-items-center bg-light rounded p-3"
+                                                style="min-width: 200px;">
+                                                <div class="symbol symbol-40px me-3">
+                                                    <span
+                                                        class="symbol-label bg-light-primary">
+                                                        <i
+                                                            class="fas fa-file text-primary fs-5"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <a href="{{ $attachment->url }}"
+                                                        target="_blank"
+                                                        class="text-gray-800 text-hover-primary fw-semibold d-block text-truncate"
+                                                        style="max-width: 150px;">
+                                                        {{ $attachment->original_filename }}
+                                                    </a>
+                                                    <span
+                                                        class="text-muted fs-7">{{ $attachment->formatted_size }}</span>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -144,21 +215,32 @@
                                         </div>
                                         <div class="timeline-content mb-10 mt-n1">
                                             <div class="pe-3 mb-5">
-                                                <div class="fs-5 fw-semibold mb-2">
-                                                    {{ $comment->user->name }}
-                                                    @if ($comment->is_internal)
-                                                        <span class="badge badge-light-warning ms-2">Internal
-                                                            Note</span>
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <div class="fs-5 fw-semibold mb-2">
+                                                            {{ $comment->user->name }}
+                                                            @if ($comment->is_internal)
+                                                                <span class="badge badge-light-warning ms-2">Internal
+                                                                    Note</span>
+                                                            @endif
+                                                            @if ($comment->is_solution)
+                                                                <span class="badge badge-light-success ms-2">
+                                                                    <i class="fas fa-check"></i> Solution
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="d-flex align-items-center mt-1 fs-6">
+                                                            <div class="text-muted me-2 fs-7">
+                                                                {{ $comment->created_at->diffForHumans() }}</div>
+                                                        </div>
+                                                    </div>
+                                                    @if ($comment->user_id === auth()->id())
+                                                        <button type="button" class="btn btn-sm btn-icon btn-light-danger" 
+                                                            onclick="deleteComment({{ $comment->id }})"
+                                                            title="Delete comment">
+                                                            <i class="fas fa-trash fs-7"></i>
+                                                        </button>
                                                     @endif
-                                                    @if ($comment->is_solution)
-                                                        <span class="badge badge-light-success ms-2">
-                                                            <i class="fas fa-check"></i> Solution
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                                <div class="d-flex align-items-center mt-1 fs-6">
-                                                    <div class="text-muted me-2 fs-7">
-                                                        {{ $comment->created_at->diffForHumans() }}</div>
                                                 </div>
                                             </div>
                                             <div class="overflow-auto pb-5">
@@ -340,21 +422,25 @@
                         <div class="mb-4">
                             <div class="text-muted fs-7 mb-2">Category</div>
                             @can('manage-ticket-categories')
-                                <form action="{{ route('tickets.update-category', $ticket) }}" method="POST" id="categoryForm">
+                                <form action="{{ route('tickets.update-category', $ticket) }}" method="POST"
+                                    id="categoryForm">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <select name="category_id" class="form-select form-select-sm"
+                                        onchange="this.form.submit()">
                                         <option value="">No Category</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ $ticket->category_id == $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </form>
                             @else
-                                @if($ticket->category)
-                                    <span class="badge fs-7" style="background-color: {{ $ticket->category->color }}; color: white;">
+                                @if ($ticket->category)
+                                    <span class="badge fs-7"
+                                        style="background-color: {{ $ticket->category->color }}; color: white;">
                                         <i class="fas {{ $ticket->category->icon }} me-1"></i>
                                         {{ $ticket->category->name }}
                                     </span>
@@ -581,6 +667,40 @@
                         const form = document.createElement('form');
                         form.method = 'POST';
                         form.action = '{{ route('tickets.destroy', $ticket) }}';
+
+                        const csrfToken = document.createElement('input');
+                        csrfToken.type = 'hidden';
+                        csrfToken.name = '_token';
+                        csrfToken.value = '{{ csrf_token() }}';
+
+                        const methodField = document.createElement('input');
+                        methodField.type = 'hidden';
+                        methodField.name = '_method';
+                        methodField.value = 'DELETE';
+
+                        form.appendChild(csrfToken);
+                        form.appendChild(methodField);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+
+            function deleteComment(commentId) {
+                Swal.fire({
+                    title: 'Delete Comment?',
+                    text: "This action cannot be undone. The comment and all its attachments will be permanently deleted.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/tickets/{{ $ticket->id }}/comments/${commentId}`;
 
                         const csrfToken = document.createElement('input');
                         csrfToken.type = 'hidden';

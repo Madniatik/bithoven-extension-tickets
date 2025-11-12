@@ -19,6 +19,7 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
         Route::patch('/{ticket}/category', [TicketController::class, 'updateCategory'])->name('update-category');
         Route::post('/{ticket}/assign', [TicketController::class, 'assign'])->name('assign');
         Route::post('/{ticket}/comments', [TicketController::class, 'addComment'])->name('comments.store');
+        Route::delete('/{ticket}/comments/{comment}', [TicketController::class, 'deleteComment'])->name('comments.destroy');
         Route::post('/{ticket}/close', [TicketController::class, 'close'])->name('close');
         Route::post('/{ticket}/reopen', [TicketController::class, 'reopen'])->name('reopen');
     });
