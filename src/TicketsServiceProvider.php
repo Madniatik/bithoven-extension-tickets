@@ -4,9 +4,24 @@ namespace Bithoven\Tickets;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Event;
 use Bithoven\Tickets\Console\Commands\CloseStaleTickets;
 use Bithoven\Tickets\Models\Ticket;
 use Bithoven\Tickets\Policies\TicketPolicy;
+
+// Events
+use Bithoven\Tickets\Events\TicketCreated;
+use Bithoven\Tickets\Events\TicketAssigned;
+use Bithoven\Tickets\Events\CommentAdded;
+use Bithoven\Tickets\Events\StatusChanged;
+use Bithoven\Tickets\Events\PriorityEscalated;
+
+// Listeners
+use Bithoven\Tickets\Listeners\TicketCreatedListener;
+use Bithoven\Tickets\Listeners\TicketAssignedListener;
+use Bithoven\Tickets\Listeners\CommentAddedListener;
+use Bithoven\Tickets\Listeners\StatusChangedListener;
+use Bithoven\Tickets\Listeners\PriorityEscalatedListener;
 
 class TicketsServiceProvider extends ServiceProvider
 {
@@ -49,12 +64,15 @@ class TicketsServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
-        // Load views
+        // Load views - check extensions folder first, then package
+        if (is_dir(resource_path('views/extensions/tickets'))) {
+            $this->loadViewsFrom(resource_path('views/extensions/tickets'), 'tickets');
+        }
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'tickets');
 
-        // Publish views
+        // Publish views to extensions folder (not vendor)
         $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/tickets'),
+            __DIR__.'/../resources/views' => resource_path('views/extensions/tickets'),
         ], 'bithoven-tickets-views');
 
         // Load translations
@@ -77,6 +95,21 @@ class TicketsServiceProvider extends ServiceProvider
         
         // Register permissions
         $this->registerPermissions();
+        
+        // Register event listeners
+        $this->registerEventListeners();
+    }
+
+    /**
+     * Register event listeners
+     */
+    protected function registerEventListeners(): void
+    {
+        Event::listen(TicketCreated::class, TicketCreatedListener::class);
+        Event::listen(TicketAssigned::class, TicketAssignedListener::class);
+        Event::listen(CommentAdded::class, CommentAddedListener::class);
+        Event::listen(StatusChanged::class, StatusChangedListener::class);
+        Event::listen(PriorityEscalated::class, PriorityEscalatedListener::class);
     }
 
     /**

@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\Storage;
 use Bithoven\Tickets\Services\TicketService;
 use Illuminate\Http\Request;
 
-// Events
-use Bithoven\Tickets\Events\TicketCreated;
-use Bithoven\Tickets\Events\TicketAssigned;
-use Bithoven\Tickets\Events\CommentAdded;
-use Bithoven\Tickets\Events\StatusChanged;
-use Bithoven\Tickets\Events\PriorityEscalated;
-
 class TicketController extends Controller
 {
     public function __construct(
@@ -32,38 +25,18 @@ class TicketController extends Controller
     /**
      * Display listing of tickets
      */
-
-    /**
-     * Display listing of tickets
-     */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Ticket::class);
 
-        // Load filters from session if no query params present
-        if (!$request->hasAny(['status', 'priority', 'category_id', 'assigned_to', 'search', 'date_from', 'date_to', 'sort', 'direction', 'clear_filters'])) {
-            $filters = session('tickets.filters', []);
-            if (!empty($filters)) {
-                $request->merge($filters);
-            }
-        } else {
-            // Clear filters if requested
-            if ($request->has('clear_filters')) {
-                session()->forget('tickets.filters');
-                return redirect()->route('tickets.index');
-            }
-            
-            // Save current filters to session
-            session(['tickets.filters' => $request->except(['page', 'export', 'clear_filters'])]);
-        }
-
-        $query = Ticket::with(['user', 'assignedUser', 'category']);
+        $query = Ticket::with(['user', 'assignedUser', 'category'])
+            ->latest();
 
         // Check if user is admin/agent (can edit tickets or manage categories)
         $isAdmin = auth()->user()->can('edit-tickets') || auth()->user()->can('manage-ticket-categories');
-        
+
         // If not admin, only show user's own tickets (created or assigned)
-        if (!$isAdmin) {
+        if (! $isAdmin) {
             $query->where(function ($q) {
                 $q->where('user_id', auth()->id())
                     ->orWhere('assigned_to', auth()->id());
@@ -112,45 +85,15 @@ class TicketController extends Controller
             });
         }
 
-        // NEW: Date range filters
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        // NEW: Dynamic sorting
-        $sortBy = $request->get('sort', 'created_at');
-        $direction = $request->get('direction', 'desc');
-        
-        $allowedSorts = ['created_at', 'updated_at', 'priority', 'status', 'ticket_number'];
-        if (in_array($sortBy, $allowedSorts)) {
-            $query->orderBy($sortBy, $direction);
-        } else {
-            $query->latest();
-        }
-
-        // NEW: CSV Export
-        if ($request->get('export') === 'csv') {
-            return $this->exportCsv($query->get());
-        }
-
-        $tickets = $query->paginate($request->get('per_page', config('tickets.pagination.per_page', 15)))
-                         ->withQueryString();
+        $tickets = $query->paginate($request->get('per_page', config('tickets.pagination.per_page')));
 
         // Get filter options
         $categories = TicketCategory::active()->ordered()->get();
         $agents = User::permission('edit-tickets')->get();
 
-        // NEW: Count active filters
-        $activeFiltersCount = collect($request->only([
-            'status', 'priority', 'category_id', 'assigned_to', 'search', 'date_from', 'date_to', 'mine'
-        ]))->filter()->count();
-
         // Get statistics filtered by user type
         $statisticsFilters = [];
-        if (!$isAdmin) {
+        if (! $isAdmin) {
             // For normal users, only show their tickets in statistics
             $statisticsFilters['user_id'] = auth()->id();
         }
@@ -160,67 +103,13 @@ class TicketController extends Controller
             'tickets',
             'categories',
             'agents',
-            'statistics',
-            'activeFiltersCount'
+            'statistics'
         ));
     }
 
     /**
-     * Export tickets to CSV
+     * Show form for creating new ticket
      */
-    protected function exportCsv($tickets)
-    {
-        $filename = 'tickets-' . now()->format('Y-m-d-His') . '.csv';
-        
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0',
-        ];
-        
-        $callback = function() use ($tickets) {
-            $file = fopen('php://output', 'w');
-            
-            // UTF-8 BOM for Excel compatibility
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Headers
-            fputcsv($file, [
-                'Ticket #',
-                'Subject',
-                'Status',
-                'Priority',
-                'Category',
-                'Created By',
-                'Assigned To',
-                'Created At',
-                'Updated At',
-                'Description'
-            ]);
-            
-            // Data
-            foreach ($tickets as $ticket) {
-                fputcsv($file, [
-                    $ticket->ticket_number,
-                    $ticket->subject,
-                    $ticket->status_label,
-                    $ticket->priority_label,
-                    $ticket->category?->name ?? 'N/A',
-                    $ticket->user?->name ?? 'N/A',
-                    $ticket->assignedUser?->name ?? 'Unassigned',
-                    $ticket->created_at->format('Y-m-d H:i:s'),
-                    $ticket->updated_at->format('Y-m-d H:i:s'),
-                    strip_tags($ticket->description)
-                ]);
-            }
-            
-            fclose($file);
-        };
-        
-        return response()->stream($callback, 200, $headers);
-    }
     public function create()
     {
         $this->authorize('create', Ticket::class);
@@ -239,9 +128,6 @@ class TicketController extends Controller
         $this->authorize('create', Ticket::class);
 
         $ticket = $this->ticketService->createTicket($request->validated());
-
-        // Fire TicketCreated event
-        event(new TicketCreated($ticket));
 
         return redirect()
             ->route('tickets.show', $ticket)
@@ -282,27 +168,7 @@ class TicketController extends Controller
             $this->authorize('update', $ticket);
         }
 
-        // Capture old values before update
-        $oldStatus = $ticket->status;
-        $oldPriority = $ticket->priority;
-
         $this->ticketService->updateTicket($ticket, $request->validated());
-
-        // Fire events for changes
-        if ($request->has('status') && $oldStatus !== $ticket->status) {
-            event(new StatusChanged($ticket, $oldStatus, $ticket->status, auth()->user()));
-        }
-
-        if ($request->has('priority') && $oldPriority !== $ticket->priority) {
-            // Only fire escalation event if priority increased
-            $priorities = ['low', 'medium', 'high', 'urgent'];
-            $oldIndex = array_search($oldPriority, $priorities);
-            $newIndex = array_search($ticket->priority, $priorities);
-            
-            if ($newIndex > $oldIndex) {
-                event(new PriorityEscalated($ticket, $oldPriority, $ticket->priority, auth()->user()));
-            }
-        }
 
         // If it's an AJAX request, return JSON
         if ($request->wantsJson() || $request->ajax()) {
@@ -343,11 +209,7 @@ class TicketController extends Controller
             'assigned_to' => 'required|exists:users,id',
         ]);
 
-        $assignedTo = User::find($request->assigned_to);
         $this->assignmentService->reassign($ticket, $request->assigned_to);
-
-        // Fire TicketAssigned event
-        event(new TicketAssigned($ticket, $assignedTo, auth()->user()));
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -387,11 +249,6 @@ class TicketController extends Controller
             }
         }
 
-        // Fire CommentAdded event (only for public comments)
-        if (!$comment->is_internal) {
-            event(new CommentAdded($ticket, $comment));
-        }
-
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
@@ -415,11 +272,7 @@ class TicketController extends Controller
             $this->authorize('update', $ticket);
         }
 
-        $oldStatus = $ticket->status;
         $this->ticketService->closeTicket($ticket);
-
-        // Fire StatusChanged event
-        event(new StatusChanged($ticket, $oldStatus, 'closed', auth()->user()));
 
         if (request()->wantsJson()) {
             return response()->json([
@@ -443,11 +296,7 @@ class TicketController extends Controller
             $this->authorize('update', $ticket);
         }
 
-        $oldStatus = $ticket->status;
         $this->ticketService->reopenTicket($ticket);
-
-        // Fire StatusChanged event
-        event(new StatusChanged($ticket, $oldStatus, 'open', auth()->user()));
 
         if (request()->wantsJson()) {
             return response()->json([

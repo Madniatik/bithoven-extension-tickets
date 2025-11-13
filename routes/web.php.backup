@@ -3,13 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Bithoven\Tickets\Http\Controllers\TicketController;
 use Bithoven\Tickets\Http\Controllers\TicketCategoryController;
-use Bithoven\Tickets\Http\Controllers\TicketDashboardController;
 
 Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function () {
-    // Tickets Dashboard
-    Route::get('/tickets/dashboard', [TicketDashboardController::class, 'index'])->name('tickets.dashboard');
-    Route::post('/tickets/dashboard/refresh', [TicketDashboardController::class, 'refresh'])->name('tickets.dashboard.refresh');
-
     // Tickets
     Route::prefix('tickets')->name('tickets.')->group(function () {
         Route::get('/', [TicketController::class, 'index'])->name('index');

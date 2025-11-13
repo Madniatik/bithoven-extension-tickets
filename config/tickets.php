@@ -61,6 +61,12 @@ return [
             'resolved' => true,
             'closed' => true,
         ],
+        // Queue configuration for async email sending
+        'queue' => [
+            'enabled' => env('TICKETS_QUEUE_ENABLED', true),
+            'connection' => env('TICKETS_QUEUE_CONNECTION', 'database'),
+            'queue' => env('TICKETS_QUEUE_NAME', 'default'),
+        ],
     ],
     
     /*
