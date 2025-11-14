@@ -12,9 +12,14 @@ Complete support ticket system for the Bithoven framework.
 - ✅ **Status Tracking:** Open, In Progress, Pending, Resolved, Closed
 - ✅ **Priority Levels:** Low, Medium, High, Urgent
 - ✅ **Permissions:** Role-based access control
-- ✅ **Email Notifications:** Async notifications with user preferences (FASE 4)
+- ✅ **Email Notifications:** Async notifications with user preferences
 - ✅ **User Preferences:** Customizable notification settings per user
 - ✅ **Queue Support:** Background email sending via Laravel queues
+- ✅ **DataTables Integration:** Yajra DataTables with server-side processing and Metronic styling
+- ✅ **Ticket Templates:** Pre-configured templates for common issues
+- ✅ **Canned Responses:** Quick reply templates for agents
+- ✅ **Automation Rules:** Automatic ticket routing and processing
+- ✅ **Automation Logs:** Track automation execution and results
 - ✅ **API Support:** RESTful API for integrations
 
 ## Installation
@@ -38,13 +43,19 @@ php artisan bithoven:extension:enable tickets
 
 ## Configuration
 
-Publish configuration file:
+### Quick Configuration
+
+Access web interface: `http://your-domain/admin/extensions/tickets/settings`
+
+**📖 Complete Settings Guide:** [docs/SETTINGS.md](docs/SETTINGS.md)
+
+### Publish Configuration (Optional)
 
 ```bash
-php artisan vendor:publish --tag=bithoven-tickets-config
+php artisan vendor:publish --tag=bithoven-extension-tickets-config
 ```
 
-Edit `config/tickets.php`:
+Edit `config/tickets.php` or use web interface:
 
 ```php
 return [
@@ -56,6 +67,8 @@ return [
     'close_after_days' => env('TICKETS_CLOSE_AFTER_DAYS', 30),
 ];
 ```
+
+**See [Configuration Documentation](docs/SETTINGS.md) for detailed explanations of all settings.**
 
 ## Email Notifications
 
@@ -150,6 +163,20 @@ You can customize these templates to match your brand.
 
 Navigate to: `http://your-domain/tickets`
 
+**All tables use Yajra DataTables with:**
+- Server-side AJAX processing for performance
+- Metronic CSS styling (#009ef7 primary color)
+- Advanced search and filtering
+- Column sorting and pagination
+- Responsive design
+
+**DataTable Views:**
+- Tickets List
+- Ticket Templates
+- Canned Responses  
+- Automation Rules
+- Automation Logs
+
 ### API Endpoints
 
 ```bash
@@ -196,6 +223,11 @@ The extension creates the following tables:
 - `ticket_categories` - Ticket categories
 - `ticket_comments` - Comments on tickets
 - `ticket_attachments` - File attachments
+- `notification_preferences` - User email notification settings
+- `ticket_templates` - Pre-configured ticket templates
+- `canned_responses` - Quick reply templates
+- `ticket_automation_rules` - Automation rules configuration
+- `ticket_automation_logs` - Automation execution logs
 
 ### Separate Database (Optional)
 
@@ -285,7 +317,7 @@ composer test
 
 ```bash
 cd ~/CODE/LARAVEL/BITHOVEN/
-git clone https://github.com/your-username/bithoven-tickets.git
+git clone https://github.com/your-username/bithoven-extension-tickets.git
 ```
 
 **2. Link to project:**
@@ -297,7 +329,7 @@ In your main project's `composer.json`:
     "repositories": [
         {
             "type": "path",
-            "url": "../bithoven-tickets"
+            "url": "../bithoven-extension-tickets"
         }
     ],
     "require": {
@@ -313,7 +345,20 @@ cd LARAVEL
 composer require bithoven/tickets:@dev
 ```
 
-Changes in `../bithoven-tickets` will reflect immediately.
+Changes in `../bithoven-extension-tickets` will reflect immediately.
+
+## Documentation
+
+### 📚 Complete Documentation
+- **[Settings Guide](docs/SETTINGS.md)** - Complete configuration guide
+- **[Documentation Index](docs/README.md)** - All documentation files
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history
+- **[UNINSTALL.md](UNINSTALL.md)** - Uninstallation options
+
+### Quick Links
+- **Web Settings:** `http://your-domain/admin/extensions/tickets/settings`
+- **Categories:** `http://your-domain/admin/ticket-categories`
+- **User Preferences:** `http://your-domain/settings/notifications`
 
 ## Changelog
 
@@ -325,7 +370,7 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## Support
 
-- **Documentation:** https://docs.bithoven.com/extensions/tickets
+- **Documentation:** [docs/](docs/)
+- **Settings Guide:** [docs/SETTINGS.md](docs/SETTINGS.md)
 - **Issues:** https://github.com/bithoven/tickets/issues
 - **Discord:** https://discord.gg/bithoven
-See UNINSTALL.md for uninstallation options
