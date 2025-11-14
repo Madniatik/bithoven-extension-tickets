@@ -3,7 +3,7 @@
 namespace Bithoven\Tickets\Mail;
 
 use Bithoven\Tickets\Models\Ticket;
-use Bithoven\Tickets\Models\Comment;
+use Bithoven\Tickets\Models\TicketComment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -19,7 +19,7 @@ class CommentAdded extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public Comment $comment
+        public TicketComment $comment
     ) {
         // Set locale based on user preference
         $locale = $comment->ticket->user->locale ?? config('app.locale', 'en');
@@ -45,9 +45,9 @@ class CommentAdded extends Mailable
         return new Content(
             view: 'tickets::emails.comment-added',
             with: [
-                'ticket' => $this->ticket,
+                'ticket' => $this->comment->ticket,
                 'comment' => $this->comment,
-                'ticketUrl' => route('tickets.show', $this->ticket->id),
+                'ticketUrl' => route('tickets.show', $this->comment->ticket_id),
             ],
         );
     }

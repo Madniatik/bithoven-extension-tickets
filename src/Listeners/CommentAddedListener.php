@@ -70,7 +70,7 @@ class CommentAddedListener implements ShouldQueue
             
             if ($preference->wantsNotification('comment_added')) {
                 try {
-                    Mail::to($recipient->email)->send(new CommentAddedMail($ticket, $comment));
+                    Mail::to($recipient->email)->send(new CommentAddedMail($comment));
                     \Log::info('CommentAdded email sent', [
                         'ticket_id' => $ticket->id,
                         'comment_id' => $comment->id,
