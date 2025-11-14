@@ -19,6 +19,10 @@ class TemplatesResponsesSeeder extends Seeder
         $technicalCategory = $categories->where('slug', 'tecnico')->first();
         $billingCategory = $categories->where('slug', 'facturacion')->first();
         $generalCategory = $categories->where('slug', 'general')->first();
+        $accountCategory = $categories->where('slug', 'cuenta')->first();
+        $featureCategory = $categories->where('slug', 'funcionalidad')->first();
+        $securityCategory = $categories->where('slug', 'seguridad')->first();
+        $integrationCategory = $categories->where('slug', 'integracion')->first();
 
         // ========= TICKET TEMPLATES =========
         
@@ -94,6 +98,39 @@ class TemplatesResponsesSeeder extends Seeder
             'subject' => 'El sistema está lento',
             'description' => "El sistema está funcionando lento o con retrasos.\n\n**Secciones afectadas:**\n[Qué partes del sistema]\n\n**Cuándo ocurre:**\n[Horario, frecuencia]\n\n**Tipo de conexión:**\n[WiFi, ethernet, datos móviles]\n\n**Velocidad de internet:**\n[Aproximada]\n\n**Otros detalles:**\n[Información adicional]",
             'category_id' => $technicalCategory?->id,
+            'priority' => 'medium',
+            'is_active' => true,
+            'usage_count' => 0,
+        ]);
+
+        // 8. API Integration Issue
+        TicketTemplate::create([
+            'name' => 'Problema con Integración API',
+            'subject' => 'Error en integración API',
+            'description' => "Tengo un problema con la integración de API.\n\n**Endpoint afectado:**\n[URL del endpoint]\n\n**Método HTTP:**\n[GET, POST, PUT, DELETE]\n\n**Código de error:**\n[Código HTTP recibido]\n\n**Mensaje de error:**\n[Mensaje completo]\n\n**Payload enviado (si aplica):**\n```json\n[pegar payload]\n```\n\n**Respuesta recibida:**\n```json\n[pegar respuesta]\n```",
+            'category_id' => $integrationCategory?->id,
+            'priority' => 'high',
+            'is_active' => true,
+            'usage_count' => 0,
+        ]);
+
+        // 9. Security Concern
+        TicketTemplate::create([
+            'name' => 'Reporte de Seguridad',
+            'subject' => '[CONFIDENCIAL] Posible problema de seguridad',
+            'description' => "**⚠️ IMPORTANTE: Este es un reporte confidencial de seguridad**\n\n**Tipo de problema:**\n[Vulnerabilidad, acceso no autorizado, exposición de datos, etc.]\n\n**Descripción:**\n[Explicar el problema de forma detallada]\n\n**Severidad estimada:**\n[Baja / Media / Alta / Crítica]\n\n**Evidencia:**\n[Screenshots, logs, etc.]\n\n**Pasos para reproducir:**\n1. [Paso 1]\n2. [Paso 2]\n\n**Impacto potencial:**\n[Qué datos o funcionalidades están afectadas]",
+            'category_id' => $securityCategory?->id,
+            'priority' => 'urgent',
+            'is_active' => true,
+            'usage_count' => 0,
+        ]);
+
+        // 10. Data Export Request
+        TicketTemplate::create([
+            'name' => 'Solicitud de Exportación de Datos',
+            'subject' => 'Necesito exportar mis datos',
+            'description' => "Necesito exportar mis datos del sistema.\n\n**Tipo de datos:**\n[Qué información necesitas exportar]\n\n**Formato preferido:**\n[CSV, Excel, PDF, JSON, etc.]\n\n**Período de tiempo:**\n[Fechas específicas o todo el historial]\n\n**Motivo (opcional):**\n[Razón de la exportación]",
+            'category_id' => $accountCategory?->id,
             'priority' => 'medium',
             'is_active' => true,
             'usage_count' => 0,
@@ -271,6 +308,88 @@ class TemplatesResponsesSeeder extends Seeder
             'title' => '[INTERNO] Verificar con Dev Team',
             'shortcut' => '/internal-dev',
             'content' => "NOTA INTERNA: Requiere revisión del equipo de desarrollo.\nComponente afectado: [especificar]\nPrioridad sugerida: [low/medium/high/urgent]",
+            'category_id' => $technicalCategory?->id,
+            'is_active' => true,
+            'is_public' => false,
+            'usage_count' => 0,
+        ]);
+
+        // === Quick Fixes ===
+
+        CannedResponse::create([
+            'title' => 'Reiniciar Sesión',
+            'shortcut' => '/logout-login',
+            'content' => "Por favor, intenta lo siguiente:\n\n1. Cierra sesión completamente\n2. Cierra el navegador\n3. Abre nuevamente el navegador\n4. Inicia sesión otra vez\n\nEsto debería resolver problemas de caché de sesión.",
+            'category_id' => $technicalCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'Modo Incógnito',
+            'shortcut' => '/incognito',
+            'content' => "Prueba abrir el sistema en modo incógnito/privado:\n\n**Chrome/Edge:** Ctrl + Shift + N\n**Firefox:** Ctrl + Shift + P\n**Safari:** Cmd + Shift + N\n\nSi funciona ahí, el problema es con extensiones del navegador o caché.",
+            'category_id' => $technicalCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'Screenshot Solicitado',
+            'shortcut' => '/need-screenshot',
+            'content' => "Para ayudarte mejor, ¿podrías enviarme un screenshot del problema?\n\n**Captura de pantalla:**\n- Windows: Win + Shift + S\n- Mac: Cmd + Shift + 4\n\nAsegúrate de que se vea claramente el mensaje de error o problema.",
+            'category_id' => null,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'Solicitud de Reembolso',
+            'shortcut' => '/refund-process',
+            'content' => "He iniciado el proceso de reembolso.\n\n**Tiempo estimado:** 5-10 días hábiles\n**Método de devolución:** Mismo método de pago original\n**Referencia:** {ticket_number}\n\nRecibirás un correo de confirmación cuando se procese.",
+            'category_id' => $billingCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'Cambio de Email',
+            'shortcut' => '/change-email',
+            'content' => "Para cambiar el email de tu cuenta:\n\n1. Ve a Mi Cuenta > Configuración\n2. Sección 'Email'\n3. Introduce el nuevo email\n4. Recibirás un código de verificación en el email nuevo\n5. Introduce el código para confirmar\n\nSi tienes problemas, puedo ayudarte desde aquí.",
+            'category_id' => $accountCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'API Documentation',
+            'shortcut' => '/api-docs',
+            'content' => "Puedes encontrar la documentación completa de la API en:\n\n🔗 [URL]/api/documentation\n\n**Incluye:**\n- Endpoints disponibles\n- Parámetros requeridos\n- Ejemplos de requests/responses\n- Rate limits\n- Autenticación\n\n¿Necesitas ayuda con algo específico?",
+            'category_id' => $integrationCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => 'Feature en Roadmap',
+            'shortcut' => '/roadmap',
+            'content' => "¡Gracias por la sugerencia!\n\nEsta funcionalidad está en nuestro roadmap para implementación futura. Te mantendremos informado sobre su desarrollo.\n\nPuedes ver nuestro roadmap público en: [URL]\n\n¿Hay algo más en lo que pueda ayudarte mientras tanto?",
+            'category_id' => $featureCategory?->id,
+            'is_active' => true,
+            'is_public' => true,
+            'usage_count' => 0,
+        ]);
+
+        CannedResponse::create([
+            'title' => '[INTERNO] Bug Confirmado',
+            'shortcut' => '/internal-bug',
+            'content' => "NOTA INTERNA: Bug confirmado y reproducido.\nSeveridad: [low/medium/high/critical]\nAsignado a: Dev Team\nEstimación de fix: [timeframe]\nRelease planeado: [version]",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => false,
