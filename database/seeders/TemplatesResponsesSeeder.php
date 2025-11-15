@@ -140,260 +140,308 @@ class TemplatesResponsesSeeder extends Seeder
 
         // === Greetings & Initial Responses ===
         
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/greeting'],
+            [
             'title' => 'Saludo Inicial',
-            'shortcut' => '/greeting',
             'content' => "Hola {user_name},\n\nGracias por contactarnos. He recibido tu ticket y estoy revisando la información proporcionada.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/hello-formal'],
+            [
             'title' => 'Saludo Formal',
-            'shortcut' => '/hello-formal',
             'content' => "Estimado/a {user_name},\n\nReciba un cordial saludo. Hemos recibido su solicitud y estamos trabajando en ella.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Investigation & Progress ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/investigating'],
+            [
             'title' => 'Investigando el Problema',
-            'shortcut' => '/investigating',
             'content' => "Estoy investigando este problema. Te mantendré informado/a sobre el progreso.\n\nTiempo estimado de respuesta: [especificar]",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/need-info'],
+            [
             'title' => 'Necesito Más Información',
-            'shortcut' => '/need-info',
             'content' => "Para poder ayudarte mejor, necesito que me proporciones la siguiente información:\n\n- [punto 1]\n- [punto 2]\n- [punto 3]\n\nEn cuanto la reciba, continuaré con la resolución.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/escalated'],
+            [
             'title' => 'Escalado a Especialista',
-            'shortcut' => '/escalated',
             'content' => "He escalado tu ticket a nuestro equipo especializado. Recibirás una respuesta en las próximas [timeframe] horas.\n\nReferencia: {ticket_number}",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Solutions & Closings ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/resolved'],
+            [
             'title' => 'Problema Resuelto',
-            'shortcut' => '/resolved',
             'content' => "El problema ha sido resuelto. Por favor, verifica que todo esté funcionando correctamente.\n\nSi el problema persiste o tienes alguna duda, no dudes en responder a este ticket.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/solution-applied'],
+            [
             'title' => 'Solución Aplicada - Confirmar',
-            'shortcut' => '/solution-applied',
             'content' => "He aplicado la siguiente solución:\n\n[describir solución]\n\n¿Podrías confirmar que el problema está resuelto?",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Password Reset ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/reset-password'],
+            [
             'title' => 'Instrucciones de Restablecimiento de Contraseña',
-            'shortcut' => '/reset-password',
             'content' => "Para restablecer tu contraseña:\n\n1. Ve a la página de inicio de sesión\n2. Haz clic en \"¿Olvidaste tu contraseña?\"\n3. Ingresa tu email registrado\n4. Recibirás un correo con las instrucciones\n5. El enlace expira en 60 minutos\n\nSi no recibes el correo, revisa tu carpeta de spam o contáctanos nuevamente.",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Technical Responses ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/clear-cache'],
+            [
             'title' => 'Cache del Navegador',
-            'shortcut' => '/clear-cache',
             'content' => "Intenta limpiar el caché de tu navegador:\n\n**Chrome/Edge:**\nCtrl + Shift + Supr (Windows) o Cmd + Shift + Delete (Mac)\n\n**Firefox:**\nCtrl + Shift + Del (Windows) o Cmd + Shift + Delete (Mac)\n\n**Safari:**\nCmd + Opción + E\n\nLuego, reinicia el navegador e intenta nuevamente.",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/browser-support'],
+            [
             'title' => 'Navegador Compatible',
-            'shortcut' => '/browser-support',
             'content' => "Para una mejor experiencia, te recomendamos usar:\n\n✅ Chrome (versión 90+)\n✅ Firefox (versión 88+)\n✅ Safari (versión 14+)\n✅ Edge (versión 90+)\n\nAsegúrate de tener tu navegador actualizado.",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Billing ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/billing-info'],
+            [
             'title' => 'Información de Facturación',
-            'shortcut' => '/billing-info',
             'content' => "Puedes consultar tus facturas en:\n\nPanel de Control > Mi Cuenta > Facturación\n\nAhí encontrarás:\n- Historial de pagos\n- Facturas descargables\n- Métodos de pago\n- Próximas renovaciones",
             'category_id' => $billingCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Closings & Thanks ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/thanks'],
+            [
             'title' => 'Agradecimiento y Cierre',
-            'shortcut' => '/thanks',
             'content' => "Gracias por tu paciencia. Si necesitas ayuda adicional, no dudes en contactarnos.\n\n¡Que tengas un excelente día!",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/close-inactive'],
+            [
             'title' => 'Cierre por Inactividad',
-            'shortcut' => '/close-inactive',
             'content' => "Como no hemos recibido respuesta en los últimos días, procederemos a cerrar este ticket.\n\nSi aún necesitas ayuda, puedes reabrir este ticket o crear uno nuevo.\n\nGracias por contactarnos.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Internal Notes (is_public = false) ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/internal-approval'],
+            [
             'title' => '[INTERNO] Requiere Aprobación',
-            'shortcut' => '/internal-approval',
             'content' => "Este ticket requiere aprobación del supervisor antes de proceder.\nMotivo: [especificar]\nEscalado a: [nombre]",
             'category_id' => null,
             'is_active' => true,
             'is_public' => false,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/internal-recurring'],
+            [
             'title' => '[INTERNO] Problema Recurrente',
-            'shortcut' => '/internal-recurring',
             'content' => "NOTA INTERNA: Este es un problema recurrente. Ver tickets relacionados:\n- {ticket_number_1}\n- {ticket_number_2}\n\nConsiderar solución permanente.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => false,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/internal-dev'],
+            [
             'title' => '[INTERNO] Verificar con Dev Team',
-            'shortcut' => '/internal-dev',
             'content' => "NOTA INTERNA: Requiere revisión del equipo de desarrollo.\nComponente afectado: [especificar]\nPrioridad sugerida: [low/medium/high/urgent]",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => false,
             'usage_count' => 0,
+        ]
         ]);
 
         // === Quick Fixes ===
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/logout-login'],
+            [
             'title' => 'Reiniciar Sesión',
-            'shortcut' => '/logout-login',
             'content' => "Por favor, intenta lo siguiente:\n\n1. Cierra sesión completamente\n2. Cierra el navegador\n3. Abre nuevamente el navegador\n4. Inicia sesión otra vez\n\nEsto debería resolver problemas de caché de sesión.",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/incognito'],
+            [
             'title' => 'Modo Incógnito',
-            'shortcut' => '/incognito',
             'content' => "Prueba abrir el sistema en modo incógnito/privado:\n\n**Chrome/Edge:** Ctrl + Shift + N\n**Firefox:** Ctrl + Shift + P\n**Safari:** Cmd + Shift + N\n\nSi funciona ahí, el problema es con extensiones del navegador o caché.",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/need-screenshot'],
+            [
             'title' => 'Screenshot Solicitado',
-            'shortcut' => '/need-screenshot',
             'content' => "Para ayudarte mejor, ¿podrías enviarme un screenshot del problema?\n\n**Captura de pantalla:**\n- Windows: Win + Shift + S\n- Mac: Cmd + Shift + 4\n\nAsegúrate de que se vea claramente el mensaje de error o problema.",
             'category_id' => null,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/refund-process'],
+            [
             'title' => 'Solicitud de Reembolso',
-            'shortcut' => '/refund-process',
             'content' => "He iniciado el proceso de reembolso.\n\n**Tiempo estimado:** 5-10 días hábiles\n**Método de devolución:** Mismo método de pago original\n**Referencia:** {ticket_number}\n\nRecibirás un correo de confirmación cuando se procese.",
             'category_id' => $billingCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/change-email'],
+            [
             'title' => 'Cambio de Email',
-            'shortcut' => '/change-email',
             'content' => "Para cambiar el email de tu cuenta:\n\n1. Ve a Mi Cuenta > Configuración\n2. Sección 'Email'\n3. Introduce el nuevo email\n4. Recibirás un código de verificación en el email nuevo\n5. Introduce el código para confirmar\n\nSi tienes problemas, puedo ayudarte desde aquí.",
             'category_id' => $accountCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/api-docs'],
+            [
             'title' => 'API Documentation',
-            'shortcut' => '/api-docs',
             'content' => "Puedes encontrar la documentación completa de la API en:\n\n🔗 [URL]/api/documentation\n\n**Incluye:**\n- Endpoints disponibles\n- Parámetros requeridos\n- Ejemplos de requests/responses\n- Rate limits\n- Autenticación\n\n¿Necesitas ayuda con algo específico?",
             'category_id' => $integrationCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/roadmap'],
+            [
             'title' => 'Feature en Roadmap',
-            'shortcut' => '/roadmap',
             'content' => "¡Gracias por la sugerencia!\n\nEsta funcionalidad está en nuestro roadmap para implementación futura. Te mantendremos informado sobre su desarrollo.\n\nPuedes ver nuestro roadmap público en: [URL]\n\n¿Hay algo más en lo que pueda ayudarte mientras tanto?",
             'category_id' => $featureCategory?->id,
             'is_active' => true,
             'is_public' => true,
             'usage_count' => 0,
+        ]
         ]);
 
-        CannedResponse::create([
+        CannedResponse::updateOrCreate(
+            ['shortcut' => '/internal-bug'],
+            [
             'title' => '[INTERNO] Bug Confirmado',
-            'shortcut' => '/internal-bug',
             'content' => "NOTA INTERNA: Bug confirmado y reproducido.\nSeveridad: [low/medium/high/critical]\nAsignado a: Dev Team\nEstimación de fix: [timeframe]\nRelease planeado: [version]",
             'category_id' => $technicalCategory?->id,
             'is_active' => true,
             'is_public' => false,
             'usage_count' => 0,
+        ]
         ]);
     }
 }
