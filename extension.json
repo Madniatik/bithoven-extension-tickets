@@ -30,7 +30,9 @@
   },
   "seeders": {
     "core": [
-      "CategorySeeder"
+      "CategorySeeder",
+      "AutomationRulesSeeder",
+      "TemplatesResponsesSeeder"
     ],
     "demo": [
       "TicketsDemoSeeder"
