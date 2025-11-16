@@ -2,7 +2,7 @@
     "name": "bithoven/tickets",
     "description": "Support ticket system for Bithoven framework",
     "type": "library",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "keywords": ["bithoven", "tickets", "support", "helpdesk", "customer-service"],
     "license": "MIT",
     "authors": [
