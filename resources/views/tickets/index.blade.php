@@ -72,7 +72,7 @@
                                 </h1>
                                 <p class="text-muted mb-0">Manage and track support tickets</p>
                             </div>
-                            @can('create-tickets')
+                            @can('extensions:tickets:base:create')
                                 <a href="{{ route('tickets.create') }}" class="btn btn-primary btn-lg">
                                     <i class="fas fa-plus"></i> New Ticket
                                 </a>

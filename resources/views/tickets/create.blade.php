@@ -28,7 +28,7 @@
                         @csrf
 
                         {{-- Template Selector --}}
-                        @can('create-tickets')
+                        @can('extensions:tickets:base:create')
                         <div class="alert alert-info d-flex align-items-center mb-5">
                             <div class="flex-grow-1">
                                 {!! getIcon('information-5', 'fs-2x text-info me-4') !!}
@@ -124,7 +124,7 @@
                         @endif
 
                         {{-- Assign (staff only) --}}
-                        @can('assign-tickets')
+                        @can('extensions:tickets:automation:manage')
                         <div class="mb-5">
                             <label class="form-label">Assign To (Optional)</label>
                             <select name="assigned_to" class="form-select">

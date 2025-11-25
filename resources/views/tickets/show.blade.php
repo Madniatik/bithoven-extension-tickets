@@ -330,7 +330,7 @@
                                     <label class="form-label fw-semibold">Add Comment</label>
                                     
                                     {{-- Quick Response Hint for Staff --}}
-                                    @can('edit-tickets')
+                                    @can('extensions:tickets:base:edit')
                                     <div class="alert alert-light-info d-flex align-items-center p-3 mb-2">
                                         {!! getIcon('information-5', 'fs-3 text-info me-3') !!}
                                         <div class="fs-7">
@@ -439,7 +439,7 @@
 
                         <div class="mb-4">
                             <div class="text-muted fs-7 mb-2">Category</div>
-                            @can('manage-ticket-categories')
+                            @can('extensions:tickets:categories:manage')
                                 <form action="{{ route('tickets.update-category', $ticket) }}" method="POST"
                                     id="categoryForm">
                                     @csrf
@@ -472,7 +472,7 @@
 
                         <div class="mb-4">
                             <div class="text-muted fs-7 mb-2">Priority</div>
-                            @can('manage-ticket-categories')
+                            @can('extensions:tickets:categories:manage')
                                 <form action="{{ route('tickets.update-priority', $ticket) }}" method="POST"
                                     id="priorityForm">
                                     @csrf
@@ -805,7 +805,7 @@
             }); // Fin DOMContentLoaded
             
             // ========= CANNED RESPONSES AUTOCOMPLETE =========
-            @can('edit-tickets')
+            @can('extensions:tickets:base:edit')
             (function() {
                 const textarea = document.getElementById('comment-textarea');
                 const dropdown = document.getElementById('canned-responses-dropdown');
