@@ -21,7 +21,7 @@ class AssignmentService
      */
     public function getLeastBusyAgent(): ?User
     {
-        return User::permission('edit-tickets')
+        return User::permission('extensions:tickets:base:edit')
             ->withCount(['assignedTickets' => function ($query) {
                 $query->whereNotIn('status', ['closed', 'resolved']);
             }])
