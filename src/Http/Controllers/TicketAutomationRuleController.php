@@ -14,7 +14,7 @@ class TicketAutomationRuleController extends Controller
 {
     public function index(AutomationRulesDataTable $dataTable)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         // Stats for dashboard cards
         $stats = [
@@ -29,14 +29,14 @@ class TicketAutomationRuleController extends Controller
 
     public function create()
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         return view('tickets::automation.create');
     }
 
     public function store(Request $request)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -69,14 +69,14 @@ class TicketAutomationRuleController extends Controller
 
     public function edit(TicketAutomationRule $automation)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         return view('tickets::automation.edit', compact('automation'));
     }
 
     public function update(Request $request, TicketAutomationRule $automation)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -109,7 +109,7 @@ class TicketAutomationRuleController extends Controller
 
     public function destroy(TicketAutomationRule $automation)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         $automation->delete();
 
@@ -119,7 +119,7 @@ class TicketAutomationRuleController extends Controller
 
     public function toggleActive(Request $request, TicketAutomationRule $automation)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         $automation->update(['is_active' => !$automation->is_active]);
 
@@ -132,7 +132,7 @@ class TicketAutomationRuleController extends Controller
 
     public function logs(TicketAutomationRule $automation)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:automation:manage');
 
         $dataTable = new AutomationLogsDataTable($automation->id);
         

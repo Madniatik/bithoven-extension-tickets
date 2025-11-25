@@ -16,7 +16,7 @@ class TicketTemplateController extends Controller
      */
     public function index(TicketTemplatesDataTable $dataTable)
     {
-        Gate::authorize('manage-ticket-categories'); // Reusing existing permission
+        Gate::authorize('extensions:tickets:templates:manage'); // Reusing existing permission
 
         return $dataTable->render('tickets::templates.index');
     }
@@ -26,7 +26,7 @@ class TicketTemplateController extends Controller
      */
     public function create()
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $categories = TicketCategory::all();
 
@@ -38,7 +38,7 @@ class TicketTemplateController extends Controller
      */
     public function store(Request $request)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -62,7 +62,7 @@ class TicketTemplateController extends Controller
      */
     public function edit(TicketTemplate $template)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $categories = TicketCategory::all();
 
@@ -74,7 +74,7 @@ class TicketTemplateController extends Controller
      */
     public function update(Request $request, TicketTemplate $template)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -98,7 +98,7 @@ class TicketTemplateController extends Controller
      */
     public function destroy(TicketTemplate $template)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $template->delete();
 
@@ -112,7 +112,7 @@ class TicketTemplateController extends Controller
      */
     public function show(TicketTemplate $template)
     {
-        Gate::authorize('create-tickets');
+        Gate::authorize('extensions:tickets:base:create');
 
         $template->incrementUsage();
 

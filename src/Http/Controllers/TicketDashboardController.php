@@ -16,12 +16,12 @@ class TicketDashboardController extends Controller
 
     /**
      * Display the ticket dashboard
-     * Only accessible to users with assign-tickets permission (admin/support staff)
+     * Only accessible to users with automation:manage permission (admin/support staff)
      */
     public function index()
     {
         // Check permission - only admin/support staff can view dashboard
-        if (!auth()->user()->can('assign-tickets')) {
+        if (!auth()->user()->can('extensions:tickets:automation:manage')) {
             abort(403, 'No tienes permiso para ver el dashboard de tickets. Solo administradores y personal de soporte tienen acceso.');
         }
 
@@ -40,7 +40,7 @@ class TicketDashboardController extends Controller
     public function refresh()
     {
         // Check permission
-        if (!auth()->user()->can('assign-tickets')) {
+        if (!auth()->user()->can('extensions:tickets:automation:manage')) {
             return response()->json([
                 'success' => false,
                 'message' => 'No tienes permiso para refrescar el dashboard.',

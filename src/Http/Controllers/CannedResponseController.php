@@ -17,7 +17,7 @@ class CannedResponseController extends Controller
      */
     public function index(CannedResponsesDataTable $dataTable)
     {
-        Gate::authorize('manage-ticket-categories'); // Reusing existing permission
+        Gate::authorize('extensions:tickets:templates:manage'); // Reusing existing permission
 
         return $dataTable->render('tickets::responses.index');
     }
@@ -27,7 +27,7 @@ class CannedResponseController extends Controller
      */
     public function create()
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $categories = TicketCategory::all();
 
@@ -39,7 +39,7 @@ class CannedResponseController extends Controller
      */
     public function store(Request $request)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -69,7 +69,7 @@ class CannedResponseController extends Controller
      */
     public function edit(CannedResponse $response)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $categories = TicketCategory::all();
 
@@ -81,7 +81,7 @@ class CannedResponseController extends Controller
      */
     public function update(Request $request, CannedResponse $response)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -111,7 +111,7 @@ class CannedResponseController extends Controller
      */
     public function destroy(CannedResponse $response)
     {
-        Gate::authorize('manage-ticket-categories');
+        Gate::authorize('extensions:tickets:templates:manage');
 
         $response->delete();
 
