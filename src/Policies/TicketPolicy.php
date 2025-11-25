@@ -12,7 +12,7 @@ class TicketPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view-tickets');
+        return $user->can('extensions:tickets:base:view');
     }
 
     /**
@@ -23,11 +23,11 @@ class TicketPolicy
         // User can view if they have permission and either:
         // - They created the ticket
         // - They are assigned to it
-        // - They have edit-tickets permission (support staff)
-        return $user->can('view-tickets') && (
+        // - They have edit permission (support staff)
+        return $user->can('extensions:tickets:base:view') && (
             $ticket->user_id === $user->id ||
             $ticket->assigned_to === $user->id ||
-            $user->can('edit-tickets')
+            $user->can('extensions:tickets:base:edit')
         );
     }
 
@@ -36,7 +36,7 @@ class TicketPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create-tickets');
+        return $user->can('extensions:tickets:base:create');
     }
 
     /**
@@ -44,7 +44,7 @@ class TicketPolicy
      */
     public function update(User $user, Ticket $ticket): bool
     {
-        return $user->can('edit-tickets') && $ticket->user_id === $user->id;
+        return $user->can('extensions:tickets:base:edit') && $ticket->user_id === $user->id;
     }
 
     /**
@@ -52,11 +52,11 @@ class TicketPolicy
      */
     public function updateStatus(User $user, Ticket $ticket): bool
     {
-        // Puede cambiar el estado: SOLO usuario asignado O quien tenga manage-ticket-categories (admins)
+        // Puede cambiar el estado: SOLO usuario asignado O quien tenga categories:manage (admins)
         // El creador NO puede cambiar el estado, solo comentar y eliminar
-        return $user->can('edit-tickets') && (
+        return $user->can('extensions:tickets:base:edit') && (
             $ticket->assigned_to === $user->id ||
-            $user->can('manage-ticket-categories')
+            $user->can('extensions:tickets:categories:manage')
         );
     }
 
@@ -65,14 +65,14 @@ class TicketPolicy
      */
     public function delete(User $user, Ticket $ticket): bool
     {
-        // User must have delete-tickets permission and either:
+        // User must have delete permission and either:
         // - They created the ticket
         // - They are assigned to it
-        // - They have manage-ticket-categories permission (admin/super-admin)
-        return $user->can('delete-tickets') && (
+        // - They have categories:manage permission (admin/super-admin)
+        return $user->can('extensions:tickets:base:delete') && (
             $ticket->user_id === $user->id ||
             $ticket->assigned_to === $user->id ||
-            $user->can('manage-ticket-categories')
+            $user->can('extensions:tickets:categories:manage')
         );
     }
 
@@ -81,7 +81,7 @@ class TicketPolicy
      */
     public function assign(User $user): bool
     {
-        return $user->can('assign-tickets');
+        return $user->can('extensions:tickets:automation:manage');
     }
 
     /**
@@ -89,6 +89,6 @@ class TicketPolicy
      */
     public function addInternalComment(User $user): bool
     {
-        return $user->can('edit-tickets');
+        return $user->can('extensions:tickets:base:edit');
     }
 }
