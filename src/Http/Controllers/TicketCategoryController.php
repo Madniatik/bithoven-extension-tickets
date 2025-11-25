@@ -14,7 +14,7 @@ class TicketCategoryController extends Controller
     public function __construct(TicketService $ticketService)
     {
         $this->ticketService = $ticketService;
-        $this->middleware('permission:manage-ticket-categories');
+        $this->middleware('permission:extensions:tickets:categories:manage');
     }
 
     /**

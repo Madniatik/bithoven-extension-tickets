@@ -374,3 +374,4 @@ MIT License. See [LICENSE](LICENSE) for details.
 - **Settings Guide:** [docs/SETTINGS.md](docs/SETTINGS.md)
 - **Issues:** https://github.com/bithoven/tickets/issues
 - **Discord:** https://discord.gg/bithoven
+// Test comment

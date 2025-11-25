@@ -27,7 +27,7 @@ class TicketController extends Controller
         protected TicketService $ticketService,
         protected AssignmentService $assignmentService
     ) {
-        $this->middleware(['auth', 'permission:view-tickets']);
+        $this->middleware(['auth', 'permission:extensions:tickets:base:view']);
     }
 
     /**
@@ -43,10 +43,10 @@ class TicketController extends Controller
 
         // Get filter options
         $categories = TicketCategory::active()->ordered()->get();
-        $agents = User::permission('edit-tickets')->get();
+        $agents = User::permission('extensions:tickets:base:edit')->get();
 
         // Get statistics
-        $isAdmin = auth()->user()->can('edit-tickets') || auth()->user()->can('manage-ticket-categories');
+        $isAdmin = auth()->user()->can('extensions:tickets:base:edit') || auth()->user()->can('extensions:tickets:categories:manage');
         $statisticsFilters = [];
         if (!$isAdmin) {
             $statisticsFilters['user_id'] = auth()->id();
