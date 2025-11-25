@@ -11,7 +11,7 @@ class StoreTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('create-tickets');
+        return $this->user()->can('extensions:tickets:base:create');
     }
 
     /**

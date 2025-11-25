@@ -125,7 +125,7 @@ class CannedResponseController extends Controller
      */
     public function show(CannedResponse $response)
     {
-        Gate::authorize('edit-tickets');
+        Gate::authorize('extensions:tickets:base:edit');
 
         $response->incrementUsage();
 
@@ -142,7 +142,7 @@ class CannedResponseController extends Controller
      */
     public function search(Request $request)
     {
-        Gate::authorize('edit-tickets');
+        Gate::authorize('extensions:tickets:base:edit');
 
         $shortcut = $request->get('shortcut');
 

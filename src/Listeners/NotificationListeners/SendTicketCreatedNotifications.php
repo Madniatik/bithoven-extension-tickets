@@ -28,7 +28,7 @@ class SendTicketCreatedNotifications implements ShouldQueue
 
         // Get all agents who can manage tickets
         $userModel = config('auth.providers.users.model');
-        $agents = $userModel::permission('edit-tickets')->get();
+        $agents = $userModel::permission('extensions:tickets:base:edit')->get();
 
         // Notify all agents about new ticket
         foreach ($agents as $agent) {

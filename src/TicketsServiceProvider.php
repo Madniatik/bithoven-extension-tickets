@@ -147,12 +147,14 @@ class TicketsServiceProvider extends ServiceProvider
         }
 
         $permissions = [
-            'view-tickets',
-            'create-tickets',
-            'edit-tickets',
-            'delete-tickets',
-            'assign-tickets',
-            'manage-ticket-categories',
+            'extensions:tickets:base:view',
+            'extensions:tickets:base:create',
+            'extensions:tickets:base:edit',
+            'extensions:tickets:base:assign',
+            'extensions:tickets:categories:manage',
+            'extensions:tickets:templates:manage',
+            'extensions:tickets:automation:manage',
+            'extensions:tickets:sla:manage',
         ];
 
         foreach ($permissions as $permission) {

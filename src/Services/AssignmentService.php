@@ -13,7 +13,7 @@ class AssignmentService
      */
     public function getAvailableAgents(): Collection
     {
-        return User::permission('edit-tickets')->get();
+        return User::permission('extensions:tickets:base:edit')->get();
     }
 
     /**

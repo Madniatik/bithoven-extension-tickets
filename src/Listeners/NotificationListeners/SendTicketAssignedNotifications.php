@@ -33,7 +33,7 @@ class SendTicketAssignedNotifications implements ShouldQueue
 
         // Also notify all other agents (for visibility)
         $userModel = config('auth.providers.users.model');
-        $agents = $userModel::permission('edit-tickets')
+        $agents = $userModel::permission('extensions:tickets:base:edit')
             ->where('id', '!=', $ticket->assigned_to)
             ->where('id', '!=', $ticket->user_id)
             ->get();

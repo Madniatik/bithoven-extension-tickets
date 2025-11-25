@@ -38,11 +38,11 @@ class SendTicketCommentedNotifications implements ShouldQueue
             $ticket->assignedUser->notify(new TicketCommentedNotification($ticket, $comment));
         }
 
-        // Notify all agents with edit-tickets permission (except comment author and already notified)
+        // Notify all agents with extensions:tickets:base:edit permission (except comment author and already notified)
         $alreadyNotified = collect([$ticket->user_id, $ticket->assigned_to, $commentAuthorId])->filter()->unique();
         
         $userModel = config('auth.providers.users.model');
-        $agents = $userModel::permission('edit-tickets')
+        $agents = $userModel::permission('extensions:tickets:base:edit')
             ->whereNotIn('id', $alreadyNotified)
             ->get();
 

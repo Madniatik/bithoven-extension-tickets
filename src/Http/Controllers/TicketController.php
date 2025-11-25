@@ -359,7 +359,7 @@ class TicketController extends Controller
      */
     public function updateCategory(Request $request, Ticket $ticket)
     {
-        abort_unless(auth()->user()->can('manage-ticket-categories'), 403, 'Only ticket administrators can change categories');
+        abort_unless(auth()->user()->can('extensions:tickets:categories:manage'), 403, 'Only ticket administrators can change categories');
 
         $request->validate([
             'category_id' => 'nullable|exists:ticket_categories,id',
@@ -377,7 +377,7 @@ class TicketController extends Controller
      */
     public function updatePriority(Request $request, Ticket $ticket)
     {
-        abort_unless(auth()->user()->can('manage-ticket-categories'), 403, 'Only ticket administrators can change priority');
+        abort_unless(auth()->user()->can('extensions:tickets:categories:manage'), 403, 'Only ticket administrators can change priority');
 
         $request->validate([
             'priority' => 'required|in:low,medium,high,urgent',

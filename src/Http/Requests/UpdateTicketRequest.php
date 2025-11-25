@@ -11,7 +11,7 @@ class UpdateTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('edit-tickets');
+        return $this->user()->can('extensions:tickets:base:edit');
     }
 
     /**

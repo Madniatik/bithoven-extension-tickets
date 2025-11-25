@@ -93,7 +93,7 @@ class TicketsDataTable extends DataTable
             ->select('tickets.*');
 
         // Filter by user if not admin
-        $isAdmin = auth()->user()->can('edit-tickets') || auth()->user()->can('manage-ticket-categories');
+        $isAdmin = auth()->user()->can('extensions:tickets:base:edit') || auth()->user()->can('extensions:tickets:categories:manage');
         if (!$isAdmin) {
             $query->where('user_id', auth()->id());
         }

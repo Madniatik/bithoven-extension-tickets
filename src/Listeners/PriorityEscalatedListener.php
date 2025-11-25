@@ -36,9 +36,9 @@ class PriorityEscalatedListener implements ShouldQueue
             return;
         }
         
-        // Get all admins (users with edit-tickets permission) with valid emails
+        // Get all admins (users with extensions:tickets:base:edit permission) with valid emails
         try {
-            $admins = User::permission('edit-tickets')
+            $admins = User::permission('extensions:tickets:base:edit')
                 ->whereNotNull('email')
                 ->where('email', '!=', '')
                 ->get();
@@ -61,7 +61,7 @@ class PriorityEscalatedListener implements ShouldQueue
                 'ticket_id' => $ticket->id,
                 'old_priority' => $oldPriority,
                 'new_priority' => $newPriority,
-                'reason' => 'No admins found with edit-tickets permission'
+                'reason' => 'No admins found with extensions:tickets:base:edit permission'
             ]);
             return;
         }
