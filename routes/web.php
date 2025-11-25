@@ -33,7 +33,7 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
     });
 
     // Ticket Categories (Admin only)
-    Route::prefix('admin/ticket-categories')->name('ticket-categories.')->middleware('permission:manage-ticket-categories')->group(function () {
+    Route::prefix('admin/ticket-categories')->name('ticket-categories.')->middleware('permission:extensions:tickets:categories:manage')->group(function () {
         Route::get('/', [TicketCategoryController::class, 'index'])->name('index');
         Route::get('/create', [TicketCategoryController::class, 'create'])->name('create');
         Route::post('/', [TicketCategoryController::class, 'store'])->name('store');
@@ -45,10 +45,10 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
     // Ticket Templates - Public endpoint for loading templates (available to all ticket creators)
     Route::get('ticket-templates/{template}', [TicketTemplateController::class, 'show'])
         ->name('tickets.templates.show')
-        ->middleware('permission:create-tickets');
+        ->middleware('permission:extensions:tickets:base:create');
 
     // Ticket Templates (Admin only)
-    Route::prefix('admin/ticket-templates')->name('tickets.templates.')->middleware('permission:manage-ticket-categories')->group(function () {
+    Route::prefix('admin/ticket-templates')->name('tickets.templates.')->middleware('permission:extensions:tickets:templates:manage')->group(function () {
         Route::get('/', [TicketTemplateController::class, 'index'])->name('index');
         Route::get('/create', [TicketTemplateController::class, 'create'])->name('create');
         Route::post('/', [TicketTemplateController::class, 'store'])->name('store');
@@ -60,10 +60,10 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
     // Canned Responses - Public endpoint for searching responses (available to agents)
     Route::get('canned-responses/search', [CannedResponseController::class, 'search'])
         ->name('tickets.responses.search')
-        ->middleware('permission:edit-tickets');
+        ->middleware('permission:extensions:tickets:base:edit');
 
     // Canned Responses (Admin only)
-    Route::prefix('admin/canned-responses')->name('tickets.responses.')->middleware('permission:manage-ticket-categories')->group(function () {
+    Route::prefix('admin/canned-responses')->name('tickets.responses.')->middleware('permission:extensions:tickets:templates:manage')->group(function () {
         Route::get('/', [CannedResponseController::class, 'index'])->name('index');
         Route::get('/create', [CannedResponseController::class, 'create'])->name('create');
         Route::post('/', [CannedResponseController::class, 'store'])->name('store');
@@ -74,7 +74,7 @@ Route::middleware(['web', 'extension.enabled:tickets', 'auth'])->group(function 
     });
 
     // Automation Rules (Admin only)
-    Route::prefix('admin/automation-rules')->name('tickets.automation.')->middleware('permission:manage-ticket-categories')->group(function () {
+    Route::prefix('admin/automation-rules')->name('tickets.automation.')->middleware('permission:extensions:tickets:automation:manage')->group(function () {
         Route::get('/', [TicketAutomationRuleController::class, 'index'])->name('index');
         Route::get('/create', [TicketAutomationRuleController::class, 'create'])->name('create');
         Route::post('/', [TicketAutomationRuleController::class, 'store'])->name('store');
