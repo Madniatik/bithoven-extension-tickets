@@ -240,12 +240,14 @@ POST   /api/tickets/{id}/comment # Add comment
 
 ### Permissions
 
-- `view-tickets` - View tickets list
-- `create-tickets` - Create new tickets
-- `edit-tickets` - Edit existing tickets
-- `delete-tickets` - Delete tickets
-- `assign-tickets` - Assign tickets to users
-- `manage-ticket-categories` - Manage categories
+- `extensions:tickets:base:view` - View tickets list
+- `extensions:tickets:base:create` - Create new tickets
+- `extensions:tickets:base:edit` - Edit existing tickets
+- `extensions:tickets:base:assign` - Assign tickets to users
+- `extensions:tickets:categories:manage` - Manage categories
+- `extensions:tickets:templates:manage` - Manage templates and canned responses
+- `extensions:tickets:automation:manage` - Manage automation rules
+- `extensions:tickets:sla:manage` - Manage SLA settings
 
 ---
 

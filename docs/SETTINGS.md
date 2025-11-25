@@ -1090,7 +1090,7 @@ sudo supervisorctl start tickets-queue:*
 
 **Configure Auto-Assignment:**
 1. Enable `auto_assign` in settings
-2. Ensure agent roles have `assign-tickets` permission
+2. Ensure agent roles have `extensions:tickets:base:assign` permission
 3. Monitor distribution fairness
 
 **Separate Database (Large Deployments):**
@@ -1107,7 +1107,7 @@ sudo supervisorctl start tickets-queue:*
 
 **❌ Settings Not Saving**
 - Check file permissions: `chmod 664 config/tickets.php`
-- Verify user has `manage-extensions` permission
+- Verify user has `core:marketplace:view` permission
 - Clear config cache: `php artisan config:clear`
 
 **❌ Emails Not Sending**
