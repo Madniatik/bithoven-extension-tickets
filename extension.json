@@ -1,29 +1,46 @@
 {
-  "name": "Tickets System",
   "slug": "tickets",
-  "version": "1.2.1",
+  "name": "Tickets System",
+  "version": "1.2.2",
   "description": "Complete support ticket system with categories, assignments, notifications, templates, automation, and DataTables",
+  "author": "BITHOVEN Team",
+  "created_at": "2025-10-31T12:00:00+00:00",
+  "updated_at": "2025-11-26T21:40:00+00:00",
+  
+  "homepage": "https://github.com/bithoven/tickets",
+  "repository": {
+    "type": "vcs",
+    "url": "https://github.com/Madniatik/bithoven-extension-tickets.git"
+  },
+  
   "category": "Productivity",
   "icon": "ki-ticket",
   "featured": true,
   "tags": ["support", "helpdesk", "tickets", "automation"],
+  
+  "permissions": [
+    "extensions:tickets:tickets:view",
+    "extensions:tickets:tickets:create",
+    "extensions:tickets:tickets:edit",
+    "extensions:tickets:tickets:delete",
+    "extensions:tickets:categories:manage",
+    "extensions:tickets:templates:manage",
+    "extensions:tickets:responses:manage",
+    "extensions:tickets:automation:manage"
+  ],
+  
+  "system_tables": ["notifications"],
+  
   "migrations": {
     "required": true,
-    "count": 8,
-    "can_skip": false,
-    "details": [
-      "2025_01_01_000001_create_ticket_categories_table",
-      "2025_01_01_000002_create_tickets_table",
-      "2025_01_01_000003_create_ticket_comments_table",
-      "2025_01_01_000004_create_ticket_attachments_table",
-      "2025_01_01_000005_create_ticket_notification_preferences_table",
-      "2025_01_01_000006_create_ticket_templates_table",
-      "2025_01_01_000007_create_ticket_canned_responses_table",
-      "2025_01_01_000008_create_ticket_automation_tables"
-    ],
-    "description": "Creates 8 tables: ticket_categories, tickets, ticket_comments, ticket_attachments, ticket_notification_preferences, ticket_templates, ticket_canned_responses, ticket_automation (rules + logs)"
+    "path": "database/migrations"
   },
-  "breaking_changes": false,
+  
+  "requirements": {
+    "php": "^8.2",
+    "laravel": "^11.0"
+  },
+  
   "min_version": "1.0.0",
   "dependencies": {
     "bithoven/core": "^1.4.0"
@@ -38,10 +55,22 @@
       "TicketsDemoSeeder"
     ]
   },
-  "system_tables": [
-    "notifications"
-  ],
+  
   "changelog": {
+    "v1.2.2": {
+      "date": "2025-11-26",
+      "changes": [
+        "Updated to extension.json schema v1.0.0",
+        "Added created_at and updated_at timestamps",
+        "Added missing fields: author, homepage, repository, permissions",
+        "Removed deprecated fields (breaking_changes top-level, migrations.count/details)",
+        "Added requirements section",
+        "Normalized structure across all extensions"
+      ],
+      "migration_notes": "No database changes. Configuration update only.",
+      "breaking_changes": false,
+      "components": ["config"]
+    },
     "v1.1.5": {
       "date": "2025-11-16",
       "changes": [
