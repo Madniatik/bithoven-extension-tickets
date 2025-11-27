@@ -5,6 +5,76 @@ All notable changes to the Bithoven Tickets extension will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-11-27
+
+### Removed - Code Sanitation
+
+**REFACTOR:** Eliminated ~190 lines of dead code from ServiceProvider
+
+#### Background
+- Code audit revealed ServiceProvider contained hook-based permission management that never executed
+- ExtensionManager doesn't implement static hook registration (`registerInstallHook()`, `registerUninstallHook()` don't exist)
+- Permissions were never being assigned to roles during installation
+- Permissions were not being cleaned up during uninstallation
+
+#### Changes Made
+
+**Removed from TicketsServiceProvider.php (~190 lines):**
+- ❌ `registerExtensionHooks()` method
+- ❌ `installPermissions()` method - Never executed
+- ❌ `uninstallPermissions()` method - Never executed
+
+**Created:**
+- ✅ `TicketsPermissionsSeeder.php` - Proper permission installation with role-based assignment
+  - Creates 8 permissions with alias/description
+  - Assigns to 5 roles: super-admin (8), master-developer (8), administrator (8), support (4), user (2)
+  - Role strategy designed for helpdesk/support system
+- ✅ `TicketsUninstallSeeder.php` - Proper permission cleanup during uninstallation
+  - Deletes role_has_permissions entries
+  - Deletes permissions matching `extensions:tickets:%`
+  - Clears permission cache
+
+**Updated extension.json:**
+```json
+"seeders": {
+  "core": [
+    "TicketsPermissionsSeeder",  // NEW - First in list
+    "CategorySeeder",
+    "AutomationRulesSeeder",
+    "TemplatesResponsesSeeder"
+  ],
+  "demo": ["TicketsDemoSeeder"],
+  "uninstall": ["TicketsUninstallSeeder"]  // NEW
+}
+```
+
+**Updated CPANEL Core:**
+- `ExtensionSeederManager`: Added `runUninstall()` method
+- `ExtensionUninstaller`: Now executes uninstall seeders before migration rollback
+
+#### Role-Based Permission Strategy
+
+| Role | Permissions | Purpose |
+|------|-------------|---------|
+| super-admin | ALL 8 | Full system management |
+| master-developer | ALL 8 | Full system management |
+| administrator | ALL 8 | Full system management |
+| support | 4 (view, create, edit, assign) | Agent work - handle tickets |
+| user | 2 (view, create) | Submit support requests |
+
+#### Impact
+- ✅ Permissions now properly installed during extension installation
+- ✅ Permissions now properly cleaned up during uninstallation
+- ✅ Role assignments working correctly (was broken before)
+- ✅ Consistent seeder-based approach across all extensions
+- ✅ No breaking changes - fixes existing bug
+
+### Fixed
+- **CRITICAL:** Permissions now assign to roles during installation (was completely broken)
+- **CRITICAL:** Permissions now cleanup on uninstall (was leaving orphaned data)
+
+---
+
 ## [1.1.0] - 2025-11-13
 
 ### Added

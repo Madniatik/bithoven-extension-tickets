@@ -1,11 +1,11 @@
 {
   "slug": "tickets",
   "name": "Tickets System",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Complete support ticket system with categories, assignments, notifications, templates, automation, and DataTables",
   "author": "BITHOVEN Team",
   "created_at": "2025-10-31T12:00:00+00:00",
-  "updated_at": "2025-11-26T21:40:00+00:00",
+  "updated_at": "2025-11-27T12:00:00+00:00",
   
   "homepage": "https://github.com/bithoven/tickets",
   "repository": {
@@ -19,14 +19,14 @@
   "tags": ["support", "helpdesk", "tickets", "automation"],
   
   "permissions": [
-    "extensions:tickets:tickets:view",
-    "extensions:tickets:tickets:create",
-    "extensions:tickets:tickets:edit",
-    "extensions:tickets:tickets:delete",
+    "extensions:tickets:base:view",
+    "extensions:tickets:base:create",
+    "extensions:tickets:base:edit",
+    "extensions:tickets:base:assign",
     "extensions:tickets:categories:manage",
     "extensions:tickets:templates:manage",
-    "extensions:tickets:responses:manage",
-    "extensions:tickets:automation:manage"
+    "extensions:tickets:automation:manage",
+    "extensions:tickets:sla:manage"
   ],
   
   "system_tables": ["notifications"],
@@ -47,16 +47,38 @@
   },
   "seeders": {
     "core": [
+      "TicketsPermissionsSeeder",
       "CategorySeeder",
       "AutomationRulesSeeder",
       "TemplatesResponsesSeeder"
     ],
     "demo": [
       "TicketsDemoSeeder"
+    ],
+    "uninstall": [
+      "TicketsUninstallSeeder"
     ]
   },
   
   "changelog": {
+    "v1.2.3": {
+      "date": "2025-11-27",
+      "changes": [
+        "REFACTOR: Code sanitation - removed ~190 lines of dead code from ServiceProvider",
+        "Removed registerExtensionHooks() method (ExtensionManager doesn't support static hooks)",
+        "Removed installPermissions() method (never executed, seeder handles this)",
+        "Removed uninstallPermissions() method (never executed, replaced with UninstallSeeder)",
+        "Created TicketsPermissionsSeeder for proper permission installation with role-based assignment",
+        "Created TicketsUninstallSeeder for proper permission cleanup on uninstall",
+        "Added 'seeders.uninstall' configuration in extension.json",
+        "Updated CPANEL core: ExtensionSeederManager with runUninstall() method",
+        "Updated CPANEL core: ExtensionUninstaller to execute uninstall seeders before migration rollback",
+        "Role strategy: Admin roles (all 8 perms), Support (4 perms), User (2 perms)"
+      ],
+      "migration_notes": "No database changes. Code cleanup and architecture improvement only.",
+      "breaking_changes": false,
+      "components": ["code", "seeders", "config"]
+    },
     "v1.2.2": {
       "date": "2025-11-26",
       "changes": [

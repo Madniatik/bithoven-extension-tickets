@@ -5,10 +5,14 @@ namespace Bithoven\Tickets;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Bithoven\Tickets\Console\Commands\CloseStaleTickets;
 use Bithoven\Tickets\Console\Commands\ProcessAutomationRules;
 use Bithoven\Tickets\Models\Ticket;
 use Bithoven\Tickets\Policies\TicketPolicy;
+use Bithoven\Tickets\Database\Seeders\Data\TicketsPermissions;
 
 // Events
 use Bithoven\Tickets\Events\TicketCreated;
@@ -107,6 +111,9 @@ class TicketsServiceProvider extends ServiceProvider
         
         // Register event listeners
         $this->registerEventListeners();
+        
+        // NOTE: Permission management handled by TicketsPermissionsSeeder (core seeder)
+        // No hooks needed - ExtensionSeederManager runs seeders automatically
     }
 
     /**
@@ -138,6 +145,8 @@ class TicketsServiceProvider extends ServiceProvider
 
     /**
      * Register permissions with Spatie Laravel Permission
+     * LEGACY: This method runs when extension is enabled, but DOES NOT run during installation
+     * Install hook (installPermissions) is the proper way to handle permissions on install
      */
     protected function registerPermissions(): void
     {
