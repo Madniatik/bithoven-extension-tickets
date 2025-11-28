@@ -1,11 +1,11 @@
 {
   "slug": "tickets",
   "name": "Tickets System",
-  "version": "1.2.3",
+  "version": "1.0.0",
   "description": "Complete support ticket system with categories, assignments, notifications, templates, automation, and DataTables",
   "author": "BITHOVEN Team",
   "created_at": "2025-10-31T12:00:00+00:00",
-  "updated_at": "2025-11-27T12:00:00+00:00",
+  "updated_at": "2025-11-28T02:48:00Z",
   
   "homepage": "https://github.com/bithoven/tickets",
   "repository": {
